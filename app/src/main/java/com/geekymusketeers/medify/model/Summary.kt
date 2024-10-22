@@ -13,5 +13,6 @@ data class Summary(
     val appointmentTime: String,
     val disease: String,
     val painLevel: String,
-    val totalPoint: Int
+    val totalPoint: Int,
+    val tokenNumber: Int
 ) : Parcelable

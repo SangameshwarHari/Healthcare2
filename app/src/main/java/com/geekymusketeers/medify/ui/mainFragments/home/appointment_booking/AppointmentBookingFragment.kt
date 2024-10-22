@@ -3,6 +3,7 @@ package com.geekymusketeers.medify.ui.mainFragments.home.appointment_booking
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -82,12 +83,24 @@ class AppointmentBookingFragment : Fragment() {
             }
 
             diseasesList = Utils.initializeSpecializationWithDiseasesLists()
-            val items: List<String> = diseasesList[args.doctorDetails.Specialist]!!
-            val adapter = ArrayAdapter(requireContext(), R.layout.list_items, items)
-            diseaseDropdown.setAdapter(adapter)
+            val specialist = args.doctorDetails.Specialist ?: run {
+                Log.e("AppointmentBooking", "Specialist is null")
+                return
+            }
+
+            val items = diseasesList[specialist]
+            if (items != null) {
+                val adapter = ArrayAdapter(requireContext(), R.layout.list_items, items)
+                diseaseDropdown.setAdapter(adapter)
+            } else {
+                Log.e("DiseaseDropdown", "No items found for the given specialist: $specialist")
+                // Handle the case (e.g., show a message or set an empty adapter)
+            }
+
             diseaseDropdown.addTextChangedListener {
                 appointmentViewModel.setAppointmentDisease(it.toString())
             }
+
 
             val situationItems = listOf("Severe Pain", "Mild Pain", "No Pain")
             val situationAdapter = ArrayAdapter(requireContext(), R.layout.list_items, situationItems)

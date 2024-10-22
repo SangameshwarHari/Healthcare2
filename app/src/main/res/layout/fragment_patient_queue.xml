@@ -66,6 +66,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/patient_list" />
 
+
         <TextView
             android:id="@+id/noAppointmentText"
             android:layout_width="match_parent"
@@ -81,6 +82,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/appointment_recyclerview"
             tools:text="No Appointment for this date" />
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

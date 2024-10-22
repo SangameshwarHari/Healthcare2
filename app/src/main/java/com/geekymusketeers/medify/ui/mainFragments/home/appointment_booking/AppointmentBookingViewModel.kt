@@ -54,8 +54,87 @@ class AppointmentBookingViewModel(application: Application) : BaseViewModel(appl
         appointmentCondition.value = condition
         updateButtonState()
     }
-
     fun bookAppointment(
+        doctorType: String?,
+        doctorUid: String,
+        doctorName: String,
+        doctorEmail: String,
+        doctorPhone: String,
+        conditionValue: HashMap<String, Float>
+    ) = viewModelScope.launch {
+
+        try {
+            val totalPoint: Int
+
+            val rightNow = Calendar.getInstance()
+            val currentHourIn24Format: Int = rightNow.get(Calendar.HOUR_OF_DAY)
+            val firstComeFirstServe = 1 + (0.1 * ((currentHourIn24Format / 10) + 1))
+
+            var temp = diseaseValue[appointmentDisease.value]!!
+            temp += conditionValue[appointmentCondition.value]!!
+            totalPoint = (temp * firstComeFirstServe).toInt()
+
+            // Generate token number
+            val tokenNumber = "${appointmentDate.value}-${(1000..9999).random()}"
+
+            val appointmentD: HashMap<String, String> = HashMap()
+            appointmentD["PatientName"] = userLiveData.value?.Name.toString()
+            appointmentD["PatientPhone"] = userLiveData.value?.Phone.toString()
+            appointmentD["Time"] = appointmentTime.value.toString()
+            appointmentD["Date"] = appointmentDate.value.toString()
+            appointmentD["Disease"] = appointmentDisease.value.toString()
+            appointmentD["PatientCondition"] = appointmentCondition.value.toString()
+            appointmentD["Prescription"] = userLiveData.value?.Prescription.toString()
+            appointmentD["TotalPoints"] = totalPoint.toString().trim()
+            appointmentD["DoctorUID"] = doctorUid
+            appointmentD["PatientID"] = userLiveData.value?.UID.toString()
+            appointmentD["TokenNumber"] = tokenNumber  // Set token number
+
+            val appointmentP: HashMap<String, String> = HashMap()
+            appointmentP["DoctorUID"] = doctorUid
+            appointmentP["DoctorName"] = doctorName
+            appointmentP["DoctorPhone"] = doctorPhone
+            appointmentP["Date"] = appointmentDate.value.toString()
+            appointmentP["Time"] = appointmentTime.value.toString()
+            appointmentP["Disease"] = appointmentDisease.value.toString()
+            appointmentP["PatientCondition"] = appointmentCondition.value.toString()
+            appointmentP["Prescription"] = userLiveData.value?.Prescription.toString()
+            appointmentP["PatientID"] = userLiveData.value?.UID.toString()
+            appointmentP["TokenNumber"] = tokenNumber  // Set token number
+
+            val summary = Summary(
+                doctorName = doctorName,
+                doctorSpeciality = doctorType.toString(),
+                doctorEmail = doctorEmail,
+                doctorPhone = doctorPhone,
+                appointmentDate = appointmentDate.value.toString(),
+                appointmentTime = appointmentTime.value.toString(),
+                disease = appointmentDisease.value.toString(),
+                painLevel = appointmentCondition.value.toString(),
+                totalPoint = totalPoint,
+                tokenNumber = tokenNumber.toInt()   // Include token in summary if needed
+            )
+            _navigateToBookingSummary.value = summary
+
+            val firebaseUploadJob = viewModelScope.launch {
+                val appointmentDBUserDoctor = viewModelScope.async(Dispatchers.IO) {
+                    updateUserDoctorAppointment(doctorUid, userLiveData.value?.UID.toString(), appointmentD)
+                }
+
+                val appointmentDBPatient = viewModelScope.async(Dispatchers.IO) {
+                    updateUserPatientAppointment(userLiveData.value?.UID.toString(), doctorUid, appointmentP)
+                }
+
+                fireStatusMutableLiveData.postValue(appointmentDBUserDoctor.await() && appointmentDBPatient.await())
+            }
+
+            firebaseUploadJob.join()
+        } catch (e: Exception) {
+            Logger.debugLog("Exception: ${e.message}")
+        }
+    }
+
+    /*fun bookAppointment(
         doctorType: String?,
         doctorUid: String,
         doctorName: String,
@@ -153,7 +232,7 @@ class AppointmentBookingViewModel(application: Application) : BaseViewModel(appl
             Logger.debugLog("Exception: ${e.message}")
         }
 
-    }
+    }*/
 
     private suspend fun updateUserPatientAppointment(
         userId: String,

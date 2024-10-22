@@ -11,4 +11,5 @@ data class DoctorAppointment(
     var TotalPoints: String? = null,
     var DoctorUID: String? = null,
     var PatientID: String? = null,
+    var TokenNumber: String? = null  // New Property
 )

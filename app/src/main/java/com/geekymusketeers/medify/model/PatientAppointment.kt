@@ -10,4 +10,5 @@ data class PatientAppointment(
     var PatientCondition: String? = null,
     var prescriptionLink: String? = null,
     var PatientID: String? = null,
+    var TokenNumber: String? = null  // New Property
 )

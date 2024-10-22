@@ -27,8 +27,21 @@ class BookingSummaryFragment : Fragment() {
 
         return binding.root
     }
-
     @SuppressLint("SetTextI18n")
+    private fun initView() {
+        binding.apply {
+            summaryDoctorName.text = "Doctor's Name: ${args.summary.doctorName}"
+            summaryDoctorSpeciality.text = "Speciality: ${args.summary.doctorSpeciality}"
+            summaryDate.text = "Appointment Date: ${args.summary.appointmentDate}"
+            summaryTime.text = "Appointment Time: ${args.summary.appointmentTime}"
+            summaryToken.text = "Token Number: ${args.summary.tokenNumber}"  // Display token number
+            btnHome.setOnClickListener {
+                findNavController().popBackStack()
+            }
+        }
+    }
+
+    /*@SuppressLint("SetTextI18n")
     private fun initView() {
         binding.apply {
             summaryDoctorName.text = "Doctor's Name: ${args.summary.doctorName}"
@@ -41,6 +54,6 @@ class BookingSummaryFragment : Fragment() {
                 findNavController().popBackStack()
             }
         }
-    }
+    }*/
 
 }

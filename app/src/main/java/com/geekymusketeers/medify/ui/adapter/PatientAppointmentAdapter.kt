@@ -29,7 +29,7 @@ class PatientAppointmentAdapter(
         return appointmentList.size
     }
 
-    @SuppressLint("SetTextI18n")
+    /*@SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PatientAppointmentViewHolder, position: Int) {
         val currentItem = appointmentList[position]
 
@@ -42,6 +42,21 @@ class PatientAppointmentAdapter(
                 listener(currentItem)
             }
         }
+    }*/
+    @SuppressLint("SetTextI18n")
+    override fun onBindViewHolder(holder: PatientAppointmentViewHolder, position: Int) {
+        val currentItem = appointmentList[position]
+
+        holder.apply {
+            name.text = currentItem.DoctorName
+            disease.text = currentItem.Disease
+            time.text = currentItem.Time
+            date.text = currentItem.Date
+            tokenNumber.text = "Token Number: ${currentItem.TokenNumber}" // Set token number
+            itemView.setOnClickListener {
+                listener(currentItem)
+            }
+        }
     }
 
     class PatientAppointmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -49,6 +64,7 @@ class PatientAppointmentAdapter(
         val disease: TextView = itemView.findViewById(R.id.diseaseDisplay)
         val time: TextView = itemView.findViewById(R.id.timeDisplay)
         val date: TextView = itemView.findViewById(R.id.dateDisplay)
+        val tokenNumber: TextView = itemView.findViewById(R.id.tokenNumberDisplay)//newly added
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -58,4 +74,5 @@ class PatientAppointmentAdapter(
         notifyDataSetChanged()
     }
 }
+
 
